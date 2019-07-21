@@ -99,7 +99,11 @@ class JsonDescriptor extends Descriptor
      */
     protected function describeContainerServices(ContainerBuilder $builder, array $options = [])
     {
-        $serviceIds = isset($options['tag']) && $options['tag'] ? array_keys($builder->findTaggedServiceIds($options['tag'])) : $builder->getServiceIds();
+        if (isset($options['tag']) && $options['tag']) {
+            $serviceIds = array_keys($this->sortTaggedServiceByPriority($builder->findTaggedServiceIds($options['tag'])));
+        } else {
+            $serviceIds = $this->sortServiceIds($builder->getServiceIds());
+        }
         $showPrivate = isset($options['show_private']) && $options['show_private'];
         $omitTags = isset($options['omit_tags']) && $options['omit_tags'];
         $showArguments = isset($options['show_arguments']) && $options['show_arguments'];
@@ -109,7 +113,7 @@ class JsonDescriptor extends Descriptor
             $serviceIds = array_filter($serviceIds, $options['filter']);
         }
 
-        foreach ($this->sortServiceIds($serviceIds) as $serviceId) {
+        foreach ($serviceIds as $serviceId) {
             $service = $this->resolveServiceDefinition($builder, $serviceId);
 
             if ($service instanceof Alias) {

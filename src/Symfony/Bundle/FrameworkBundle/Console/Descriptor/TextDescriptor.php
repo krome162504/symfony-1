@@ -179,7 +179,11 @@ class TextDescriptor extends Descriptor
 
         $options['output']->title($title);
 
-        $serviceIds = isset($options['tag']) && $options['tag'] ? array_keys($builder->findTaggedServiceIds($options['tag'])) : $builder->getServiceIds();
+        if (isset($options['tag']) && $options['tag']) {
+            $serviceIds = array_keys($this->sortTaggedServiceByPriority($builder->findTaggedServiceIds($options['tag'])));
+        } else {
+            $serviceIds = $this->sortServiceIds($builder->getServiceIds());
+        }
         $maxTags = [];
 
         if (isset($options['filter'])) {

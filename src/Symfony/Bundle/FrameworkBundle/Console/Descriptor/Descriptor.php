@@ -279,4 +279,26 @@ abstract class Descriptor implements DescriptorInterface
 
         return $serviceIds;
     }
+
+    /**
+     * Returns services with tags sorted by priority.
+     *
+     * @param $services array of services
+     *
+     * @return array An array of services
+     */
+    protected function sortTaggedServiceByPriority($services)
+    {
+        uasort($services, function ($a, $b) {
+            $priorityA = isset($a[0]['priority']) ? $a[0]['priority'] : 0;
+            $priorityB = isset($b[0]['priority']) ? $b[0]['priority'] : 0;
+            if ($priorityA === $priorityB) {
+                return 0;
+            }
+
+            return ($priorityA > $priorityB) ? -1 : 1;
+        });
+
+        return $services;
+    }
 }
